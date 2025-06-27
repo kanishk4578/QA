@@ -1,0 +1,12 @@
+@import "tailwindcss";
+body{
+    /* background-image: url("https://tse2.mm.bing.net/th?id=OIP.so2Nvu6LCh8abWi1IcInJwHaEK&pid=Api&P=0&h=180");
+    background-repeat: no-repeat;
+    background-size: cover; */
+    background: linear-gradient(
+    135deg,
+    #7b66ff 0%,
+    #a08eff 50%,
+    #d6ccff 100%
+  );
+}
