@@ -1,0 +1,50 @@
+# === Node Modules ===
+node_modules/
+
+# === Logs ===
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# === Env Files ===
+.env
+.env.local
+.env.development
+.env.production
+
+# === Build Files ===
+dist/
+build/
+Frontend/dist/
+Frontend/build/
+Backend/dist/
+Backend/build/
+
+# === OS/System Files ===
+.DS_Store
+Thumbs.db
+
+# === Editor/IDE Folders ===
+.vscode/
+.idea/
+
+# === Uploads (user-uploaded files) ===
+uploads/
+
+# === Cache Files ===
+*.cache
+.cache/
+.next/
+out/
+
+# === Coverage (for testing) ===
+coverage/
+
+# === Render/Deployment Metadata (optional) ===
+*.render
+
+# === Misc ===
+*.sqlite
+*.db
