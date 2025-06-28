@@ -5,6 +5,7 @@ import axios from 'axios';
 
 function Header() {
   const [showMenu, setShowMenu] = useState(false);
+  const [showNavMenu, setShowNavMenu] = useState(false);
   const [username, setUsername] = useState('');
   const [user, setUser] = useState({});
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -58,38 +59,75 @@ function Header() {
 
   return (
     <header className="bg-gray-100 shadow-sm py-4 px-6 flex justify-between items-center">
-      <h3
-        className="text-xl sm:text-2xl font-semibold cursor-pointer text-blue-700"
-        onClick={() => navigate('/summary/:questionId')}
-      >
-        🧠 AI Q&A Portal
-      </h3>
+      <div className="flex items-center gap-2">
+        <img
+          src="/Logo.png"
+          alt="Logo"
+          className="h-10 sm:h-12 object-contain rounded-md shadow-md"
+        />
+        <span className="text-xl sm:text-2xl font-semibold text-blue-700 hidden sm:block">
+          RashtrSetu
+        </span>
+      </div>
 
-      <div className="flex items-center gap-6">
-        {/* Navigation Links */}
-        <div className="flex gap-4">
+      
+      <div className="flex items-center gap-4 sm:gap-6">
+        
+        <div className="hidden sm:flex gap-4">
           <Link
             to="/"
-            className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600 transition"
+            className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600 transition text-sm sm:text-base"
           >
             Home
           </Link>
           <Link
             to="/dashboard"
-            className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600 transition"
+            className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600 transition text-sm sm:text-base"
           >
             Dashboard
           </Link>
         </div>
 
-        {/* Avatar Dropdown */}
+        
+        <div className="sm:hidden relative">
+          <button
+            onClick={() => setShowNavMenu(!showNavMenu)}
+            className="text-blue-700 border border-blue-500 px-3 py-1 rounded focus:outline-none"
+          >
+            ☰
+          </button>
+          {showNavMenu && (
+            <div className="absolute right-0 mt-2 bg-white border rounded shadow w-36 z-50">
+              <Link
+                to="/"
+                onClick={() => setShowNavMenu(false)}
+                className="block px-4 py-2 hover:bg-gray-100"
+              >
+                🏠 Home
+              </Link>
+              <Link
+                to="/dashboard"
+                onClick={() => setShowNavMenu(false)}
+                className="block px-4 py-2 hover:bg-gray-100"
+              >
+                📊 Dashboard
+              </Link>
+            </div>
+          )}
+        </div>
+
+        
         <div className="relative">
           <div
             onClick={() => setShowMenu(!showMenu)}
             className="w-12 h-12 rounded-full border-2 border-blue-500 cursor-pointer overflow-hidden"
           >
             <img
-              src={isAuthenticated ? profileImage : 'https://cdn-icons-png.flaticon.com/512/6159/6159448.png'}
+              src={
+                isAuthenticated
+                  ? profileImage
+                  : 'https://cdn-icons-png.flaticon.com/512/6159/6159448.png'
+              }
               alt="avatar"
               className="w-full h-full object-cover"
             />

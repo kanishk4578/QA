@@ -4,13 +4,8 @@ const questionModel = require('../models/question.model');
 const askQuestion = async (req, res) => {
   try {
     let { questionText } = req.body;
-    console.log('Request Body:', req.body);
-
-    const expiryDuration = 24*60*60* 1000; // 1 day in ms
-    const expiresAt = new Date(Date.now() + expiryDuration);
     
-    let question = await questionModel.create({ questionText,expiresAt });
-    console.log("Question created:", question);
+    let question = await questionModel.create({questionText});
     
     res.status(201).json({ question });
   } catch (err) {
@@ -21,8 +16,8 @@ const askQuestion = async (req, res) => {
 
 const readQuestion = async (req, res) => {
   try {
-    const questions = await questionModel.find().sort({ createdAt: -1 }); // Sort newest first
-    res.status(200).json({ questions }); // wrap in { questions } as your frontend expects
+    const questions = await questionModel.find().sort({ createdAt: -1 }); 
+    res.status(200).json({ questions });
   } catch (err) {
     console.error("Error reading questions:", err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -31,7 +26,7 @@ const readQuestion = async (req, res) => {
 
 const getQuestion = async (req, res) => {
   try {
-    const question = await questionModel.findById(req.params.questionId); // ✅ fixed
+    const question = await questionModel.findById(req.params.questionId); 
 
     if (!question) {
       return res.status(404).json({ error: 'Question not found' });
@@ -39,7 +34,6 @@ const getQuestion = async (req, res) => {
 
     res.status(200).json(question);
   } catch (err) {
-    console.error('Error fetching question:', err.message);
     res.status(500).json({ error: 'Internal server error' });
   }
 }
@@ -48,14 +42,14 @@ const getQuestion = async (req, res) => {
 const editQuestion = async (req, res) => {
   try {
     const { questionText } = req.body;
-    const { questionId } = req.params; // ✅ fixed
+    const { questionId } = req.params; 
 
     if (!questionText) {
       return res.status(400).json({ error: 'Question text is required' });
     }
 
     const updated = await questionModel.findByIdAndUpdate(
-      questionId, // ✅ fixed
+      questionId, 
       { questionText },
       { new: true }
     );

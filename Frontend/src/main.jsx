@@ -14,6 +14,7 @@ import Answer from './components/Answer.jsx'
 import Summary from './components/Summary.jsx'
 import ProfileSetup from './components/Profilesetup.jsx';
 import EditQuestion from './components/Edit.jsx';
+import PostAnswer from './components/PostAnswer.jsx'
 
 
 const router = createBrowserRouter([
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
   {
     path:"/edit/:questionId",
     element:<EditQuestion/>
+  },
+  {
+    path:"/answers/:questionId",
+    element:<PostAnswer/>
   },
   
 ])

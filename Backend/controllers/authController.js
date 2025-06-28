@@ -18,7 +18,6 @@ const registerUser = async (req,res)=>{
                        email,
                        password:hash,
                    })
-
                    let token = generateToken(user);
                    res.status(201).json({ token, user });      
             })
@@ -42,7 +41,7 @@ const loginUser = async (req,res)=>{
              res.status(200).json({ token, user });
          }
          else{
-            res.status(404).send("wrong email password") // <-- If this is called after res.redirect, error will occur
+            res.status(404).send("wrong email password") 
          }
         })
     } catch (error) {
@@ -63,21 +62,19 @@ const getUserProfile =  (req, res, next) => {
 
 const profileSetup = async (req, res) => {
   try {
-    // Ensure file is uploaded
+  
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
 
-    // Get user ID from isLoggedIn middleware
-    const userId = req.user.id; // or req.user._id based on how you attach it
+    const userId = req.user.id; 
     const profileImageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
 
-    // Update user in DB
     const updatedUser = await userModel.findByIdAndUpdate(
       userId,
       { profileImage: profileImageUrl },
       { new: true }
-    ).select("-password"); // exclude password from response
+    ).select("-password");
 
     return res.status(200).json({
       message: "Profile image uploaded successfully",

@@ -1,10 +1,10 @@
 const answerModel = require('../models/answer.model');
 
-// Write answer: store userId with the answer
+
 const writeAnswer = async (req, res) => {
   try {
     const { answerText, userId, questionId } = req.body;
-    const user = req.user?._id || userId; // Prefer req.user if using auth middleware
+    const user = req.user?._id || userId;
 
     if (!user) {
       return res.status(400).json({ error: "User ID is required" });
@@ -21,10 +21,9 @@ const writeAnswer = async (req, res) => {
   }
 };
 
-// Read answers: return only answers by the logged-in user
 const readAnswer = async (req, res) => {
   try {
-    const userId = req.user?._id || req.query.userId; // Prefer req.user if using auth middleware
+    const userId = req.user?._id || req.query.userId;
     if (!userId) {
       return res.status(400).json({ error: "User ID is required" });
     }

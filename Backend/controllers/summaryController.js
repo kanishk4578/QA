@@ -8,7 +8,6 @@ const sendAnswersToCohere = async (req, res) => {
       return res.status(400).json({ error: "Question ID is required" });
     }
 
-    // Fetch all answers for the given question
     const answers = await answerModel.find({ questionId });
     if (!answers || answers.length === 0) {
       return res.status(404).json({ error: "No answers found for this question." });
@@ -16,14 +15,13 @@ const sendAnswersToCohere = async (req, res) => {
 
     const answerTexts = answers.map(a => a.answerText).join('\n');
 
-    // Call Cohere Summarization API
     const cohereResponse = await axios.post(
       'https://api.cohere.ai/v1/summarize',
       {
         text: `Here are the responses from multiple people to a decision:\n${answerTexts}\n\nSummarize the overall sentiment, and highlight unique pros and cons.`,
-        length: 'auto',             // You can use: short, medium, long, or auto
-        format: 'bullets',          // Or 'paragraph'
-        model: 'command',           // Cohere's best model
+        length: 'auto',           
+        format: 'bullets',          
+        model: 'command',           
         temperature: 0.3
       },
       {
@@ -34,7 +32,6 @@ const sendAnswersToCohere = async (req, res) => {
       }
     );
 
-    // Return the summary
     res.json({ summary: cohereResponse.data.summary });
 
   } catch (err) {

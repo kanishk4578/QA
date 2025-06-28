@@ -2,9 +2,14 @@ const mongoose = require('mongoose');
 
 const userSchema = mongoose.Schema({
     adhaar:{
-        type:Number,
+        type:String,
         unique:true,
         required:true,
+        validate: {
+          validator: function(v) {
+            return v.length === 12; 
+           },
+    }
     },
     name:{
         type:String,

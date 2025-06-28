@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { io } from 'socket.io-client';
 import Header from './Header';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import Footer from './Footer';
 
-const socket = io(import.meta.env.VITE_BASE_URL, { autoConnect: true });
 
 const containerVariants = {
   hidden: { opacity: 1 },
@@ -29,17 +28,25 @@ const letterVariants = {
   },
 };
 
+const isWithinTimeLimit = (createdAt, hours) => {
+  const now = new Date();
+  const created = new Date(createdAt);
+  const diffInMs = now - created;
+  const limitInMs = hours*60*60*1000;
+  return diffInMs <= limitInMs;
+};
+
+
 function HomeDashboard() {
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   const [dotCount, setDotCount] = useState(1);
   const [increasing, setIncreasing] = useState(true);
 
-  // Dot animation
+  //dot animation wala code
   useEffect(() => {
     const interval = setInterval(() => {
       setDotCount(prev => {
@@ -61,7 +68,7 @@ function HomeDashboard() {
     return () => clearInterval(interval);
   }, [increasing]);
 
-  // Fetch user & question data
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) return;
@@ -86,40 +93,12 @@ function HomeDashboard() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Real-time socket listener
-  useEffect(() => {
-    socket.on('new-question', question => {
-      setQuestions(prev => [question, ...prev]);
-    });
-    return () => socket.off('new-question');
-  }, []);
-
-  // Answer submission
-  const submitAnswer = async (questionId) => {
-    if (!answers[questionId]) return;
-    const token = localStorage.getItem('token');
-    try {
-      await axios.post(`${import.meta.env.VITE_BASE_URL}/answers`, {
-        userId: user?._id,
-        questionId,
-        answerText: answers[questionId]
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setAnswers(prev => ({ ...prev, [questionId]: '' }));
-      alert('Answer submitted!');
-    } catch (err) {
-      alert('Failed to submit answer.');
-    }
-  };
-
   return (
     <>
       <Header />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-        {/* Welcome animation */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -133,7 +112,7 @@ function HomeDashboard() {
           ))}
         </motion.div>
 
-        {/* Admin-only: Post question */}
+      
         {user?.email === 'lucia@gmail.com' && (
           <div className="text-center mb-8">
             <Link
@@ -145,7 +124,7 @@ function HomeDashboard() {
           </div>
         )}
 
-        {/* Questions Section */}
+        
         <h3 className="text-2xl sm:text-3xl font-semibold text-red-600 mb-6 text-center">
           Live Questions
         </h3>
@@ -153,48 +132,36 @@ function HomeDashboard() {
         {loading ? (
           <p className="text-center text-lg text-gray-600">Loading...</p>
         ) : Array.isArray(questions) && questions.length > 0 ? (
-          questions.map(q => (
-            <div
-              key={q._id}
-              className="border border-gray-300 bg-white rounded p-4 mb-6 shadow hover:shadow-md transition"
-            >
-              <strong className="block text-lg mb-2 text-gray-800">{q.questionText}</strong>
-              <div className="flex flex-wrap gap-3 mt-2">
-                {user?.email === 'lucia@gmail.com' ? (
-                  <>
-                    <Link
-                      to={`/edit/${q._id}`}
-                      className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 transition"
-                    >
-                      Edit Question
-                    </Link>
-                    <Link
-                      to={`/summary/${q._id}`}
-                      className="bg-gray-700 text-white px-4 py-1 rounded hover:bg-gray-800 transition"
-                    >
-                      View AI Summary
-                    </Link>
-                  </>
-                ) : (
-                  <>
-                    <Link
-                      to="/question"
-                      className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 transition"
-                    >
-                      Submit Answer
-                    </Link>
-                    <Link
-                      to={`/summary/${q._id}`}
-                      className="bg-gray-700 text-white px-4 py-1 rounded hover:bg-gray-800 transition"
-                    >
-                      View AI Summary
-                    </Link>
-                  </>
-                )}
-              </div>
-            </div>
-          ))
-        ) : (
+          questions
+                   .filter(q => isWithinTimeLimit(q.createdAt, 24))
+                   .map(q => (
+                              <div key={q._id} className="border border-gray-300 bg-white rounded p-4 mb-6 shadow hover:shadow-md transition">
+                              <strong className="block text-lg mb-2 text-gray-800">{q.questionText}</strong>
+                              <div className="flex flex-wrap gap-3 mt-2">
+                              {user?.email === 'lucia@gmail.com' ? (
+                                 <>
+                              <Link to={`/edit/${q._id}`} className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 transition">
+                                  Edit Question
+                              </Link>
+                              <Link to={`/summary/${q._id}`} className="bg-gray-700 text-white px-4 py-1 rounded hover:bg-gray-800 transition">
+                                   View Summary
+                              </Link>
+                             </>
+                             ) : (
+                                <>
+                                 <Link to={`/answers/${q._id}`} className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 transition">
+                                   Submit Answer
+                                 </Link>
+                                <Link to={`/summary/${q._id}`} className="bg-gray-700 text-white px-4 py-1 rounded hover:bg-gray-800 transition">
+                                   View Summary
+                                </Link>
+                                </>
+                                   )}
+                                 </div>
+                               </div>
+                             ))
+
+          ) : (
           <p className="text-center text-xl text-black">
             No questions found{'.'.repeat(dotCount)}
           </p>

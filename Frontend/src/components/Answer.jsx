@@ -12,14 +12,12 @@ function AnswerList() {
     const token = localStorage.getItem('token');
     if (!token) return;
 
-    // Fetch user data
     axios.get(`${import.meta.env.VITE_BASE_URL}/users/userdata`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => setUser(res.data))
       .catch(err => console.error("Profile fetch error:", err.message));
 
-    // Fetch questions
     axios.get(`${import.meta.env.VITE_BASE_URL}/question/read`, {
       headers: { Authorization: `Bearer ${token}` }
     })
@@ -32,7 +30,7 @@ function AnswerList() {
         setQuestions([]);
       });
 
-    // Fetch user's answers
+      
     axios.get(`${import.meta.env.VITE_BASE_URL}/answer/read`, {
       headers: { Authorization: `Bearer ${token}` }
     })
