@@ -32,6 +32,9 @@ app.use("/api/question", questionRouter);
 app.use("/api/answer", answerRouter);
 app.use("/api/summary", summaryRouter);
 
+
+const __dirname = path.resolve();
+
 // Serve React frontend build from /dist folder
 app.use(express.static(path.join(__dirname, 'dist')));
 
