@@ -1,19 +1,15 @@
-# render.yaml
 services:
   - type: web
-    name: rashtrsetu-fullstack
+    name: rashtrsetu-backend
     env: node
-    rootDir: backend
-    buildCommand: "npm install && npm run build"
-    startCommand: "node app.js"
+    plan: free
+    buildCommand: |
+      cd Frontend && npm install && npm run build
+      cd ../Backend && npm install
+    startCommand: node app.js
+    rootDir: Backend
     envVars:
       - key: NODE_VERSION
-        value: 18
-      - key: MONGO_URL
-        value: "mongodb+srv://Kanishk078:Kanishk%405678@cluster0.jolyzxb.mongodb.net/QA?retryWrites=true&w=majority&appName=Cluster0"
-      - key: JWT_SECRET
-        value: "KSRKSRKSRKSRKSR"
-      - key: COHERE_API_KEY
-        value: "1PK6pCwGJ9Zh9HcucAdbe9rKd2LnJzOj5utP8QVs"
-
-# You can add more env vars if needed
+        value: 20
+      - key: VITE_BASE_URL
+        value: https://rashtrsetu-backend.onrender.com
