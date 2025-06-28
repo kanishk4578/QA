@@ -33,13 +33,12 @@ app.use("/answer", answerRouter);
 app.use("/summary", summaryRouter);
 
 
-// Serve React frontend build from /dist folder
-app.use(express.static(path.join(__dirname, 'dist')));
-
-// Serve index.html for all unknown routes (for SPA routing)
+// Serve frontend (production build)
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
 });
+
 
 // Start Server
 server.listen(5000, () => {
