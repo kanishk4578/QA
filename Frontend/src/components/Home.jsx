@@ -3,7 +3,6 @@ import axios from 'axios';
 import Header from './Header';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import Footer from './Footer';
 
 
 const containerVariants = {
