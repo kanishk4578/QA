@@ -27,10 +27,10 @@ app.use(cors({
 }));
 
 // Routes
-app.use("/users", userRouter);
-app.use("/question", questionRouter);
-app.use("/answer", answerRouter);
-app.use("/summary", summaryRouter);
+app.use("/api/users", userRouter);
+app.use("/api/question", questionRouter);
+app.use("/api/answer", answerRouter);
+app.use("/api/summary", summaryRouter);
 
 // Serve React frontend build from /dist folder
 app.use(express.static(path.join(__dirname, 'dist')));
