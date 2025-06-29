@@ -6,7 +6,7 @@
 
 ## 🔗 Live Preview
 
-> _Coming Soon_
+> https://rashtrsetu.onrender.com
 
 ---
 
@@ -30,7 +30,6 @@
 - Axios
 - React Router DOM
 - Tailwind CSS
-- Socket.io-client
 
 ### 🛠️ Backend
 - Node.js
