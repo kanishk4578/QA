@@ -1,286 +1,112 @@
 import React, { useEffect, useState } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import axios from 'axios';
+import Header from './Header';
+import { useParams } from 'react-router-dom';
 
 function Summary() {
+  const { questionId } = useParams();
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [sentimentData, setSentimentData] = useState({
-    favor: 65,
-    against: 35,
-    pros: [
-      "Increases economic growth and job opportunities",
-      "Promotes innovation and technological advancement",
-      "Enhances global competitiveness",
-      "Improves living standards for many citizens"
-    ],
-    cons: [
-      "May lead to environmental degradation",
-      "Could increase income inequality",
-      "Potential displacement of traditional industries",
-      "Risk of cultural homogenization"
-    ],
-    sentiment: "Positive"
-  });
 
-  // Simulate API call
   useEffect(() => {
-    const fetchSummary = async () => {
-      try {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // Mock summary data
-        setSummary({
-          title: "Economic Development Policy Analysis",
-          content: "Based on comprehensive analysis of responses, this policy proposal shows significant support among stakeholders. The initiative focuses on sustainable economic growth while addressing environmental concerns.",
-          generatedAt: new Date().toLocaleDateString(),
-          totalResponses: 1247
-        });
-      } catch (err) {
+    const token = localStorage.getItem('token');
+
+    axios.get(`${import.meta.env.VITE_BASE_URL}/summary/summaries/${questionId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => {
+        setSummary(res.data.summary);
+      })
+      .catch(err => {
         console.error("Failed to fetch summary:", err);
         setSummary(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSummary();
-  }, []);
-
-  const chartData = [
-    { name: 'In Favor', value: sentimentData.favor, color: '#10B981' },
-    { name: 'Against', value: sentimentData.against, color: '#EF4444' }
-  ];
-
-  const barData = [
-    { name: 'Positive', value: sentimentData.favor, fill: '#10B981' },
-    { name: 'Negative', value: sentimentData.against, fill: '#EF4444' }
-  ];
-
-  const COLORS = ['#10B981', '#EF4444'];
-
-  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
-    const RADIAN = Math.PI / 180;
-    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-    const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-    return (
-      <text 
-        x={x} 
-        y={y} 
-        fill="white" 
-        textAnchor={x > cx ? 'start' : 'end'} 
-        dominantBaseline="central"
-        className="font-bold text-sm"
-      >
-        {`${(percent * 100).toFixed(0)}%`}
-      </text>
-    );
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 px-4 py-10">
-        <div className="max-w-6xl mx-auto">
-          <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8">
-            <div className="flex items-center justify-center space-x-3">
-              <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-              <p className="text-xl text-gray-700 font-medium">Analyzing responses and generating insights...</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!summary) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 px-4 py-10">
-        <div className="max-w-6xl mx-auto">
-          <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8 text-center">
-            <div className="w-16 h-16 bg-red-500 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <span className="text-white text-2xl">⚠️</span>
-            </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">No Summary Available</h2>
-            <p className="text-gray-600">No summary found for this question. Please try again later.</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+      })
+      .finally(() => setLoading(false));
+  }, [questionId]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 px-4 py-10">
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent mb-4">
-            📊 Analysis Summary
-          </h1>
-          <p className="text-gray-600 text-lg">Comprehensive insights from community responses</p>
-        </div>
-
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Total Responses</h3>
-                <p className="text-3xl font-bold text-gray-900">{summary.totalResponses?.toLocaleString() || 'N/A'}</p>
-              </div>
-              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">👥</span>
-              </div>
+    <>
+      <Header />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 px-4 py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Header Section */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full mb-4 shadow-lg">
+              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
             </div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">Summary Report</h1>
+            <p className="text-lg text-gray-600">Generated insights and analysis</p>
           </div>
-          
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Overall Sentiment</h3>
-                <p className={`text-3xl font-bold ${sentimentData.sentiment === 'Positive' ? 'text-green-600' : 'text-red-600'}`}>
-                  {sentimentData.sentiment}
+
+          {/* Content Section */}
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-20">
+                <div className="relative">
+                  <div className="w-12 h-12 border-4 border-blue-200 rounded-full animate-spin"></div>
+                  <div className="absolute top-0 left-0 w-12 h-12 border-4 border-blue-600 rounded-full animate-spin border-t-transparent"></div>
+                </div>
+                <p className="text-gray-600 mt-6 text-lg">Generating your summary...</p>
+              </div>
+            ) : summary ? (
+              <div className="p-8">
+                <div className="flex items-center mb-6">
+                  <div className="w-2 h-8 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full mr-4"></div>
+                  <h2 className="text-2xl font-semibold text-gray-900">Generated Summary</h2>
+                </div>
+                
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl"></div>
+                  <div className="relative bg-white rounded-xl border-2 border-blue-100 p-6 shadow-sm">
+                    <div className="prose prose-lg max-w-none">
+                      <div className="text-gray-800 leading-relaxed whitespace-pre-wrap font-medium">
+                        {summary}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer with metadata */}
+                <div className="mt-8 pt-6 border-t border-gray-200">
+                  <div className="flex items-center justify-between text-sm text-gray-500">
+                    <div className="flex items-center">
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Generated just now
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                      Ready
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-20">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                  <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Summary Not Found</h3>
+                <p className="text-gray-600 text-center max-w-md">
+                  We couldn't find a summary for this question. It may still be processing or there might have been an issue generating it.
                 </p>
+                <button 
+                  onClick={() => window.location.reload()} 
+                  className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
+                >
+                  Try Again
+                </button>
               </div>
-              <div className="w-8 h-8 bg-pink-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">💝</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Generated On</h3>
-                <p className="text-3xl font-bold text-gray-900">{summary.generatedAt}</p>
-              </div>
-              <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">🎯</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Summary Content */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/20">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-              <div className="w-1 h-8 bg-gradient-to-b from-blue-600 to-purple-600 rounded-full"></div>
-              Summary Analysis
-            </h2>
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">{summary.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{summary.content}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Sentiment Distribution */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/20">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-              <div className="w-1 h-8 bg-gradient-to-b from-green-600 to-red-600 rounded-full"></div>
-              Sentiment Distribution
-            </h2>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={chartData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={renderCustomizedLabel}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value) => `${value}%`} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="flex justify-center space-x-6 mt-4">
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-green-500 rounded-full"></div>
-                <span className="text-sm font-medium text-gray-700">In Favor ({sentimentData.favor}%)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-red-500 rounded-full"></div>
-                <span className="text-sm font-medium text-gray-700">Against ({sentimentData.against}%)</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Pros and Cons */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Pros */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/20">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-              <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">📈</span>
-              </div>
-              <span className="text-green-600">Pros</span>
-            </h2>
-            <ul className="space-y-4">
-              {sentimentData.pros.map((pro, index) => (
-                <li key={index} className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-gray-700 leading-relaxed">
-                    <span className="font-bold text-green-700">Positive:</span> {pro}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Cons */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/20">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-              <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">📉</span>
-              </div>
-              <span className="text-red-600">Cons</span>
-            </h2>
-            <ul className="space-y-4">
-              {sentimentData.cons.map((con, index) => (
-                <li key={index} className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-gray-700 leading-relaxed">
-                    <span className="font-bold text-red-700">Negative:</span> {con}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* Additional Chart */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/20">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-            <div className="w-1 h-8 bg-gradient-to-b from-blue-600 to-purple-600 rounded-full"></div>
-            Response Breakdown
-          </h2>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={barData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip formatter={(value) => `${value}%`} />
-                <Bar dataKey="value" fill="#8884d8" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            )}
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
