@@ -9,6 +9,7 @@ const answerRouter = require('./router/answer.router.js');
 const summaryRouter = require('./router/summary.router.js');
 const http = require('http');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const server = http.createServer(app);
@@ -19,12 +20,23 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieparser());
 
+
+const limiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 100, // Limit each IP to 100 requests per minute
+  message: 'Too many requests, please try again later.',
+});
+
+app.use(limiter);
 // Set CORS for frontend hosted on Render
 app.use(cors({
   origin: 'https://rashtrsetu.onrender.com',
   methods: ['GET', 'POST', 'PUT'],
   credentials: true
 }));
+
+app.options('*', cors()); // Preflight handling
+
 
 // Routes
 app.use("/users", userRouter);
